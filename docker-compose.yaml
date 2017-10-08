@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  mui:
+    image: wallaroolabs/wallaroo-metrics-ui:0.1
+    ports:
+      - "4000:4000"
+
+  application:
+    command: >
+      machida
+      --application-module celsius
+      --name worker-name
+      --cluster-initializer --ponythreads=1
+      --in 0.0.0.0:7000
+      --out receiver:5555
+      --metrics mui:5001
+      --external 0.0.0.0:5050
+      --control 0.0.0.0:6000
+      --data 0.0.0.0:6001 
+    environment:
+      PYTHONPATH: "/opt/wallaroo/machida:/opt/wallaroo/examples/python/celsius"
+    build: ./
+    depends_on:
+      - mui
+
+  receiver:
+    command: >
+      receiver
+      -l 0.0.0.0:5555
+      --no-write
+      --ponythreads=1
+    build: ./
+    depends_on:
+      - application
+
+  sender:
+    command: >
+      sender
+      --host application:7000
+      --messages 25000000
+      --binary
+      --batch-size 300
+      --repeat
+      --no-write
+      --msg-size 8
+      --ponythreads=1 --file
+      /opt/wallaroo/examples/python/celsius/celsius.msg
+    build: ./
+    depends_on:
+      - application
+
+
