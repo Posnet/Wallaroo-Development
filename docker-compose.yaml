@@ -9,7 +9,7 @@ services:
   application:
     command: >
       machida
-      --application-module celsius
+      --application-module application
       --name worker-name
       --cluster-initializer
       --ponythreads=1
@@ -20,8 +20,10 @@ services:
       --control 0.0.0.0:6000
       --data 0.0.0.0:6001 
     environment:
-      PYTHONPATH: "/opt/wallaroo/machida:/opt/wallaroo/examples/python/celsius"
+      PYTHONPATH: "/opt/wallaroo/machida:/opt/application/"
     build: ./
+    volumes:
+      - ./src/:/opt/application/
     depends_on:
       - mui
 
@@ -46,8 +48,10 @@ services:
       --no-write
       --msg-size 8
       --ponythreads=1
-      --file /opt/wallaroo/examples/python/celsius/celsius.msg
+      --file /opt/application/test_data/data.msg
     build: ./
+    volumes:
+      - ./src/:/opt/application/
     depends_on:
       - application
 
