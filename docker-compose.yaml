@@ -11,7 +11,8 @@ services:
       machida
       --application-module celsius
       --name worker-name
-      --cluster-initializer --ponythreads=1
+      --cluster-initializer
+      --ponythreads=1
       --in 0.0.0.0:7000
       --out receiver:5555
       --metrics mui:5001
@@ -44,8 +45,8 @@ services:
       --repeat
       --no-write
       --msg-size 8
-      --ponythreads=1 --file
-      /opt/wallaroo/examples/python/celsius/celsius.msg
+      --ponythreads=1
+      --file /opt/wallaroo/examples/python/celsius/celsius.msg
     build: ./
     depends_on:
       - application
