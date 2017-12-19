@@ -2,12 +2,15 @@ version: '3'
 
 services:
   mui:
-    image: wallaroolabs/wallaroo-metrics-ui:0.1
+    image: wallaroo-labs-docker-wallaroolabs.bintray.io/release/wallaroo:0.3.0
+    entrypoint: metrics_reporter_ui foreground
     ports:
       - "4000:4000"
 
   application:
-    command: >
+    image: wallaroo-labs-docker-wallaroolabs.bintray.io/release/wallaroo:0.3.0
+    privileged: true
+    entrypoint: >
       machida
       --application-module application
       --name worker-name
@@ -20,25 +23,27 @@ services:
       --control 0.0.0.0:6000
       --data 0.0.0.0:6001 
     environment:
-      PYTHONPATH: "/opt/wallaroo/machida:/opt/application/"
-    build: ./
+      PYTHONPATH: "/wallaroo-src/machida:/opt/application/"
     volumes:
       - ./src/:/opt/application/
     depends_on:
       - mui
 
   receiver:
-    command: >
+    image: wallaroo-labs-docker-wallaroolabs.bintray.io/release/wallaroo:0.3.0
+    privileged: true
+    entrypoint: >
       receiver
       -l 0.0.0.0:5555
       --no-write
       --ponythreads=1
-    build: ./
     depends_on:
       - application
 
   sender:
-    command: >
+    image: wallaroo-labs-docker-wallaroolabs.bintray.io/release/wallaroo:0.3.0
+    privileged: true
+    entrypoint: >
       sender
       --host application:7000
       --messages 25000000
@@ -49,7 +54,6 @@ services:
       --msg-size 8
       --ponythreads=1
       --file /opt/application/test_data/data.msg
-    build: ./
     volumes:
       - ./src/:/opt/application/
     depends_on:
