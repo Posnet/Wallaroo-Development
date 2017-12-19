@@ -8,5 +8,5 @@ TODO:
  - Set up dynamic python path to enable local development via the mapped volume
    - remember to prevent bytecode generation
  - Investiage what stateful information wallaroo writes to the filesystem and volume map those locations
- - Experiment with clustering
+ - Experiment with clustering (i.e. multiple docker containers with a custom network)
 
